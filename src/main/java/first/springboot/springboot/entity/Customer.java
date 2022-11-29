@@ -1,12 +1,12 @@
 package first.springboot.springboot.entity;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
+@Data
 
 public class Customer {
     private Integer id;
