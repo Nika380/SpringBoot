@@ -17,6 +17,17 @@ public class CustomerController {
         return db.stream().filter(c -> !c.getDeleted()).toList();
     }
 
+    @GetMapping ("/customers/{id}")
+    public ResponseEntity<Customer> getById(@PathVariable int id) {
+        var optional = db.stream().filter(c -> c.getId() == id).findFirst();
+        if(optional.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        var foundCustomer = optional.get();
+        return ResponseEntity.ok(optional.get());
+    }
+
+
     @PostMapping ("/customers")
     public Customer add(@RequestBody  Customer customer) {
         customer.setId(++id);
