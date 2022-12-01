@@ -1,63 +1,52 @@
 package first.springboot.springboot.controller;
 
 import first.springboot.springboot.entity.Customer;
+import first.springboot.springboot.service.CustomerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/customers")
 public class CustomerController {
-    private static int id = 0;
-    private List<Customer> db = new ArrayList<>();
 
-    @GetMapping ("/customers")
+    private final CustomerService customerService;
+
+    public CustomerController(CustomerService customerService) {
+        this.customerService = customerService;
+    }
+
+
+    @GetMapping ()
     public List<Customer> getAll() {
-        return db.stream().filter(c -> !c.getDeleted()).toList();
+        return customerService.getAll();
     }
 
-    @GetMapping ("/customers/{id}")
-    public ResponseEntity<Customer> getById(@PathVariable int id) {
-        var optional = db.stream().filter(c -> c.getId() == id).findFirst();
-        if(optional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        var foundCustomer = optional.get();
-        return ResponseEntity.ok(optional.get());
+    @GetMapping ("/{id}")
+    public Customer getById(@PathVariable int id) throws Exception {
+        return customerService.getCustomer(id);
     }
 
 
-    @PostMapping ("/customers")
+
+    @PostMapping ()
     public Customer add(@RequestBody  Customer customer) {
-        customer.setId(++id);
-        customer.setDeleted(false);
-        db.add(customer);
-        return customer;
+        return customerService.add(customer);
+
     }
 
-    @PutMapping ("/customers/{id}")
-    public ResponseEntity<Customer> update(@RequestBody Customer customer, @PathVariable int id) {
-        var optional = db.stream().filter(c -> c.getId() == id).findFirst();
-        if(optional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        var foundCustomer = optional.get();
-        foundCustomer.setFirstName(customer.getFirstName());
-        foundCustomer.setLastName(customer.getLastName());
-        foundCustomer.setBirthdate(customer.getBirthdate());
-        return ResponseEntity.ok(foundCustomer);
+    @PutMapping ("/{id}")
+    public Customer update(@RequestBody Customer customer, @PathVariable int id) {
+        return customerService.update(id, customer);
+
     }
 
-    @DeleteMapping ("/customers/{id}")
+    @DeleteMapping ("/{id}")
     public ResponseEntity<Customer> delete(@PathVariable int id) {
-        var optional = db.stream().filter(c -> c.getId() == id).findFirst();
-        if(optional.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        var foundCustomer = optional.get();
-        foundCustomer.setDeleted(true);
+        customerService.delete(id);
         return ResponseEntity.noContent().build();
-
     }
+
+
 }
